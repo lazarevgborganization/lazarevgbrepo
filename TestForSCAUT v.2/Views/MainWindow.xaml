@@ -1,0 +1,31 @@
+﻿<Window x:Class="TestForSCAUT_v_2.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestForSCAUT_v_2"
+        xmlns:views="clr-namespace:TestForSCAUT_v_2.Views"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Choose file" Command="{Binding ChooseFileCommand}" InputGestureText="Ctrl+O"/>
+                <Separator/>
+                <MenuItem Header="Clear dispaly" Command="{Binding ClearDisplayCommand}" InputGestureText="Ctrl+R"/>
+                <Separator/>
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}" InputGestureText="Ctrl+E"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid>
+            <ListBox ItemsSource="{Binding Terminals}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <views:TerminalWindow/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<data>
+
+   <terminals>
+
+        <terminal protocol="MT-600" serialId="12345">
+
+            <sensor type="Speed" value="23.15"/>
+
+            <sensor type="Motor" value="Off"/>
+
+            <sensor type="GPS_Sattelites_Count" value="10"/>
+
+        </terminal>
+
+         <terminal protocol="MT-530" serialId="12345">
+
+            <sensor type="FuelLevel" value="127.12"/>
+
+        </terminal>
+
+        <terminal protocol="MT-500" serialId="a-12345"/>
+
+   </terminals>   
+
+</data> 
