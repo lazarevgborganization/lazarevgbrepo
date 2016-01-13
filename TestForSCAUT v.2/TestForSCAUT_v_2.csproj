@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="Commands\CommandManagerHelper.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="Commands\DelegateCommandGeneric.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

@@ -13,12 +13,16 @@ namespace TestForSCAUT_v_2.Commands
     /// </summary>
     internal class CommandManagerHelper
     {
+        /// <summary>
+        /// Вызывает обработчики слабых ссылок
+        /// </summary>
+        /// <param name="handlers"></param>
             internal static void CallWeakReferenceHandlers(List<WeakReference> handlers)
             {
             if (handlers != null)
             {
-                // Take a snapshot of the handlers before we call out to them since the handlers
-                // could cause the array to me modified while we are reading it.
+                // Сохраняем данные об обработчиках перед их вызовом, т.к. они могут служить причиной
+                //модификации читаемого массива
                 EventHandler[] callers = new EventHandler[handlers.Count];
                 int count = 0;
 
@@ -28,7 +32,7 @@ namespace TestForSCAUT_v_2.Commands
                     EventHandler handler = reference.Target as EventHandler;
                     if (handler == null)
                     {
-                        // Clean up old handlers that have been collected
+                        //Убираем обработчики из списка обработчиков, собранные сборщиком мусора
                         handlers.RemoveAt(i);
                     }
                     else
@@ -38,7 +42,7 @@ namespace TestForSCAUT_v_2.Commands
                     }
                 }
 
-                // Call the handlers that we snapshotted
+                //Вызов обработчиков, данные о которых были сохранены
                 for (int i = handlers.Count; i >= 0; i--)
                 {
                     EventHandler handler = callers[i];
@@ -47,6 +51,12 @@ namespace TestForSCAUT_v_2.Commands
             }
         }
 
+        /// <summary>
+        /// Подписка на событие CommandManager.RequerySuggested 
+        /// (Возникает, если CommandManager обнаруживает условия, 
+        /// которые могут изменить возможность выполнения команды.)
+        /// </summary>
+        /// <param name="handlers"></param>
         internal static void AddHandlersToRequerySuggested(List<WeakReference> handlers)
         {
             if (handlers != null)
@@ -55,11 +65,18 @@ namespace TestForSCAUT_v_2.Commands
                 {
                     EventHandler handler = handlerRef.Target as EventHandler;
                     if (handler != null)
+                        //Возникает, если обнаружены условия, способные повлиять на возможность выполнения команды
                         CommandManager.RequerySuggested += handler;
                 }
             }
         }
 
+        /// <summary>
+        /// Отписка от события CommandManager.RequerySuggested
+        /// (Возникает, если CommandManager обнаруживает условия, 
+        /// которые могут изменить возможность выполнения команды.)
+        /// </summary>
+        /// <param name="handlers"></param>
         internal static void RemoveHandlersFromRequerySuggested(List<WeakReference> handlers)
         {
             if (handlers != null)
@@ -73,11 +90,23 @@ namespace TestForSCAUT_v_2.Commands
             }
         }
 
+        /// <summary>
+        /// Добавляет обработчик в передаваемый список обработчиков, используя слабую ссылку.
+        /// Размер списка по умолчанию: -1.
+        /// </summary>
+        /// <param name="handlers"></param>
+        /// <param name="handler"></param>
         internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler)
         {
             AddWeakReferenceHandler(ref handlers, handler, -1);
         }
 
+        /// <summary>
+        ///  Добавляет обработчик в передаваемый список обработчиков, используя слабую ссылку.
+        /// </summary>
+        /// <param name="handlers"></param>
+        /// <param name="handler"></param>
+        /// <param name="defaultSize"></param>
         internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler,
                                                      int defaultSize)
         {
@@ -88,7 +117,11 @@ namespace TestForSCAUT_v_2.Commands
 
             handlers.Add(new WeakReference(handler));
         }
-
+        /// <summary>
+        ///  Удаляет обработчик из передаваемого списка обработчиков
+        /// </summary>
+        /// <param name="handlers"></param>
+        /// <param name="handler"></param>
         internal static void RemoveWeakReferenceHandler(List<WeakReference> handlers, EventHandler handler)
         {
             if (handlers != null)
@@ -99,8 +132,8 @@ namespace TestForSCAUT_v_2.Commands
                     EventHandler existingHandler = reference.Target as EventHandler;
                     if ((existingHandler == null) || (existingHandler == handler))
                     {
-                        // Clean up old handlers that have been collected
-                        // in addition to the handler that is to be removed.
+                        //Убираем из списка обработчики ,собранные сборщиком мусора, в дополнение к обработчику, 
+                        //уже удаленному
                         handlers.RemoveAt(i);
                     }
                 }
