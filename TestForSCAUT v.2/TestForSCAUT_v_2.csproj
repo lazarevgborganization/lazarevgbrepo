@@ -60,6 +60,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\CommandManagerHelper.cs" />
+    <Compile Include="Commands\CommandReference.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\DelegateCommandGeneric.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
@@ -96,7 +97,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
