@@ -5,50 +5,41 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace TestForSCAUT_v._2.Commands
+namespace TestForSCAUT_v_2.Commands
 {
-    class DelegateCommand : ICommand
+    public class DelegateCommand : ICommand
     {
         private readonly Action _executeMethod;
         private readonly Func<bool> _canExecuteMethod;
         private bool _isAutomaticRequeryDisabled;
         private List<WeakReference> _canExecuteChangedHandlers;
 
-
+        #region Constructors
         public DelegateCommand(Action executeMethod)
             : this(executeMethod, null, false)
         {
         }
-        
+
         public DelegateCommand(Action executeMethod, Func<bool> canExecuteMethod)
-            : this(executeMethod,canExecuteMethod,false)
+            : this(executeMethod, canExecuteMethod, false)
         {
         }
 
         public DelegateCommand(Action executeMethod, Func<bool> canExecuteMethod, bool isAutomaticRequeryDisabled)
         {
-           if (executeMethod == null)
+            if (executeMethod == null)
             {
                 throw new ArgumentNullException("executeMethod");
             }
             _executeMethod = executeMethod;
             _canExecuteMethod = canExecuteMethod;
-    }
-        
-
-       public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
         }
+        #endregion
 
+        #region Public Methods
+        /// <summary>
+        ///     Method to determine if the command can be executed
+        /// </summary>
         public bool CanExecute()
         {
             if (_canExecuteMethod != null)
@@ -56,22 +47,34 @@ namespace TestForSCAUT_v._2.Commands
             return true;
         }
 
+        /// <summary>
+        ///     Execution of the command
+        /// </summary>
         public void Execute()
         {
             if (_executeMethod != null)
                 _executeMethod();
         }
 
-        public bool CanExecute(object parameter)
+        /// <summary>
+        ///     Raises the CanExecuteChaged event
+        /// </summary>
+        public void RaiseCanExecuteChanged()
         {
-            throw new NotImplementedException();
+            OnCanExecuteChanged();
         }
 
-        public void Execute(object parameter)
+        /// <summary>
+        ///     Protected virtual method to raise CanExecuteChanged event
+        /// </summary>
+        protected virtual void OnCanExecuteChanged()
         {
-            throw new NotImplementedException();
+            CommandManagerHelper.CallWeakReferenceHandlers(_canExecuteChangedHandlers);
         }
 
+        /// <summary>
+        ///     Property to enable or disable CommandManager's automatic requery on this command
+        /// </summary>
         public bool IsAutomaticRequeryDisabled
         {
             get
@@ -80,7 +83,7 @@ namespace TestForSCAUT_v._2.Commands
             }
             set
             {
-                if(_isAutomaticRequeryDisabled != value)
+                if (_isAutomaticRequeryDisabled != value)
                 {
                     if (value)
                         CommandManagerHelper.RemoveHandlersFromRequerySuggested(_canExecuteChangedHandlers);
@@ -90,102 +93,39 @@ namespace TestForSCAUT_v._2.Commands
                 }
             }
         }
+        #endregion
 
-        internal class CommandManagerHelper
+        #region ICommand Members
+        bool ICommand.CanExecute(object parameter)
         {
-            internal static void CallWeakReferenceHandlers(List<WeakReference> handlers)
+            return CanExecute();
+        }
+
+        void ICommand.Execute(object parameter)
+        {
+            Execute();
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add
             {
-                if (handlers != null)
-                {                     
-                    // Take a snapshot of the handlers before we call out to them since the handlers
-                    // could cause the array to me modified while we are reading it.
-                    EventHandler[] callers = new EventHandler[handlers.Count];
-                    int count = 0;
-
-                    for(int i=handlers.Count;i>=0;i--)
-                    {
-                        WeakReference reference = handlers[i];
-                        EventHandler handler = reference.Target as EventHandler;
-                        if(handler == null)
-                        {
-                            // Clean up old handlers that have been collected
-                            handlers.RemoveAt(i);
-                        }
-                        else
-                        {
-                            callers[count] = handler;
-                            count++;
-                        }
-                    }
-
-                    // Call the handlers that we snapshotted
-                    for (int i=handlers.Count;i>=0;i--)
-                    {
-                        EventHandler handler = callers[i];
-                        handler(null, EventArgs.Empty);
-                    }
-                }
-            }
-
-            internal static void AddHandlersToRequerySuggested(List<WeakReference> handlers)
-            {
-                if(handlers != null)
+                 if(!_isAutomaticRequeryDisabled)
                 {
-                    foreach(WeakReference handlerRef in handlers)
-                    {
-                        EventHandler handler = handlerRef.Target as EventHandler;
-                        if (handler != null)
-                            CommandManager.RequerySuggested += handler;
-                    }
+                    CommandManager.RequerySuggested += value;
                 }
+                CommandManagerHelper.AddWeakReferenceHandler(ref _canExecuteChangedHandlers, value, 2);
             }
 
-            internal static void RemoveHandlersFromRequerySuggested(List<WeakReference> handlers)
+            remove
             {
-                if(handlers != null)
+                if(!_isAutomaticRequeryDisabled)
                 {
-                    foreach(WeakReference handlerRef in handlers)
-                    {
-                        EventHandler handler = handlerRef.Target as EventHandler;
-                        if (handler != null)
-                            CommandManager.RequerySuggested -= handler;
-                    }
+                    CommandManager.RequerySuggested -= value;
                 }
-            }
-
-            internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler)
-            {
-                AddWeakReferenceHandler(ref handlers, handler, -1);
-            }
-
-            internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler,
-                                                         int defaultSize)
-            {
-                if (handlers != null)
-                {
-                    handlers = defaultSize > 0 ? new List<WeakReference>(defaultSize) : new List<WeakReference>(0);
-                }
-
-                handlers.Add(new WeakReference(handler));
-            }
-
-            internal static void RemoveWeakReferenceHandler(List<WeakReference> handlers, EventHandler handler)
-            {
-                if(handlers != null)
-                {
-                    for(int i=handlers.Count - 1;i>=0;i--)
-                    {
-                        WeakReference reference = handlers[i];
-                        EventHandler existingHandler = reference.Target as EventHandler;
-                        if ((existingHandler == null) || (existingHandler == handler))
-                        {
-                            // Clean up old handlers that have been collected
-                            // in addition to the handler that is to be removed.
-                            handlers.RemoveAt(i);
-                        }      
-                    }
-                }
+                CommandManagerHelper.RemoveWeakReferenceHandler(_canExecuteChangedHandlers, value);
             }
         }
+        #endregion
     }
 }
