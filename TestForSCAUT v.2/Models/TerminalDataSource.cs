@@ -11,18 +11,22 @@ namespace TestForSCAUT_v_2.Models
 {
     internal class TerminalDataSource
     {
-        private static ObservableCollection<Terminal> readTerminal;
+        private static ObservableCollection<Terminal> readTerminal = new ObservableCollection<Terminal>();
 
         /// <summary>
         /// Позволяет пользователю выбрать файл расширения .xml
         /// </summary>
         /// <returns></returns>
-        public static string Load()
+        public string Load()
         {
             OpenFileDialog ofDialog = new OpenFileDialog();
             ofDialog.Filter = "XmlDocument|.*xml";
+            ofDialog.Multiselect = true;
+            ofDialog.CheckFileExists = true;
 
-            if ((bool)ofDialog.ShowDialog())
+            Nullable<bool> result = ofDialog.ShowDialog();
+
+            if(result == true)
             {
                 return ofDialog.FileName;
              }
@@ -35,7 +39,7 @@ namespace TestForSCAUT_v_2.Models
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public static ObservableCollection<Terminal> ReadFile(string fileName)
+        public ObservableCollection<Terminal> ReadFile(string fileName)
         {
             try
             {

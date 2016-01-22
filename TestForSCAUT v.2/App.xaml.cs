@@ -16,6 +16,8 @@ namespace TestForSCAUT_v_2
         private void OnStartUp(object sender, StartupEventArgs e)
         {
             Views.MainWindow view = new Views.MainWindow();
+            ViewModels.MainViewModel mainViewModel = new ViewModels.MainViewModel();
+            view.DataContext = mainViewModel;
 
             view.Show(); 
         }

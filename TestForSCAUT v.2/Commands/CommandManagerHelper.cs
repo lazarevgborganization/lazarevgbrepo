@@ -110,7 +110,7 @@ namespace TestForSCAUT_v_2.Commands
         internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler,
                                                      int defaultSize)
         {
-            if (handlers != null)
+            if (handlers == null)
             {
                 handlers = defaultSize > 0 ? new List<WeakReference>(defaultSize) : new List<WeakReference>(0);
             }

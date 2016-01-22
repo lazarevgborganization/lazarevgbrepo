@@ -10,10 +10,11 @@ using TestForSCAUT_v_2.Models;
 using System.Windows;
 using System.Windows.Input;
 
-namespace TestForSCAUT_v._2.ViewModels
+namespace TestForSCAUT_v_2.ViewModels
 {
     public class MainViewModel
     {
+        TerminalDataSource tds = new TerminalDataSource();
         private DelegateCommand chooseFileCommand;
         private DelegateCommand clearDisplayCommand;
         private DelegateCommand exitCommand;
@@ -62,12 +63,12 @@ namespace TestForSCAUT_v._2.ViewModels
 
         private bool CanChooseFile()
         {
-            return TerminalDataSource.Load() != null;
+            return tds.Load() != null;
         }
 
         private void ChooseFile()
         {
-            TerminalDataSource.ReadFile(TerminalDataSource.Load());
+            tds.ReadFile(tds.Load());
         }
 
         private bool CanClearDisplay()

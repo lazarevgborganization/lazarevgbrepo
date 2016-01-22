@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace TestForSCAUT_v._2.Commands
+namespace TestForSCAUT_v_2.Commands
 {
     /// <summary>
     /// Данный класс упрощает взаимодействие ключа, забинденного в XAML разметке, и команды, определенной в ViewModel,
@@ -15,6 +15,10 @@ namespace TestForSCAUT_v._2.Commands
     /// </summary>
     public class CommandReference :  Freezable, ICommand
     {
+        public CommandReference()
+        {
+
+        }
         /// <summary>
         /// Свойство зависимости
         /// </summary>
